@@ -13,6 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['stableinterface'],
+                    'supported_by': 'committer',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: ec2_vpc_subnet_facts
@@ -65,6 +69,7 @@ EXAMPLES = '''
     - publicA
     - publicB
     - publicC
+  register: subnet_facts
 
 - set_fact:
     subnet_ids: "{{ subnet_facts.results|map(attribute='subnets.0.id')|list }}"

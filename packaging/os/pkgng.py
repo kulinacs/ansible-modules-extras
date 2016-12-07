@@ -21,6 +21,10 @@
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: pkgng
@@ -89,13 +93,19 @@ notes:
 
 EXAMPLES = '''
 # Install package foo
-- pkgng: name=foo state=present
+- pkgng:
+    name: foo
+    state: present
 
 # Annotate package foo and bar
-- pkgng: name=foo,bar annotation=+test1=baz,-test2,:test3=foobar
+- pkgng:
+    name: foo,bar
+    annotation: '+test1=baz,-test2,:test3=foobar'
 
 # Remove packages foo and bar 
-- pkgng: name=foo,bar state=absent
+- pkgng:
+    name: foo,bar
+    state: absent
 '''
 
 

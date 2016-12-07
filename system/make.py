@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: make
@@ -46,10 +50,13 @@ options:
 
 EXAMPLES = '''
 # Build the default target
-- make: chdir=/home/ubuntu/cool-project
+- make:
+    chdir: /home/ubuntu/cool-project
 
 # Run `install` target as root
-- make: chdir=/home/ubuntu/cool-project target=install
+- make:
+    chdir: /home/ubuntu/cool-project
+    target: install
   become: yes
 
 # Pass in extra arguments to build
@@ -64,6 +71,9 @@ EXAMPLES = '''
 # TODO: Disabled the RETURN as it was breaking docs building. Someone needs to
 # fix this
 RETURN = '''# '''
+
+from ansible.module_utils.six import iteritems
+from ansible.module_utils.basic import AnsibleModule
 
 
 def run_command(command, module, check_rc=True):
@@ -90,9 +100,9 @@ def sanitize_output(output):
     :return: sanitized output
     """
     if output is None:
-        return b('')
+        return ''
     else:
-        return output.rstrip(b("\r\n"))
+        return output.rstrip("\r\n")
 
 
 def main():
@@ -101,14 +111,14 @@ def main():
         argument_spec=dict(
             target=dict(required=False, default=None, type='str'),
             params=dict(required=False, default=None, type='dict'),
-            chdir=dict(required=True, default=None, type='str'),
+            chdir=dict(required=True, default=None, type='path'),
         ),
     )
     # Build up the invocation of `make` we are going to use
     make_path = module.get_bin_path('make', True)
     make_target = module.params['target']
     if module.params['params'] is not None:
-        make_parameters = [k + '=' + str(v) for k, v in module.params['params'].iteritems()]
+        make_parameters = [k + '=' + str(v) for k, v in iteritems(module.params['params'])]
     else:
         make_parameters = []
 
@@ -146,8 +156,6 @@ def main():
         chdir=module.params['chdir']
     )
 
-
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()

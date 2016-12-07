@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = """
 ---
 module: cloudtrail
@@ -80,16 +84,25 @@ extends_documentation_fragment: aws
 EXAMPLES = """
   - name: enable cloudtrail
     local_action: cloudtrail
-      state=enabled name=main s3_bucket_name=ourbucket
-      s3_key_prefix=cloudtrail region=us-east-1
+      state: enabled
+      name: main
+      s3_bucket_name: ourbucket
+      s3_key_prefix: cloudtrail
+      region: us-east-1
 
   - name: enable cloudtrail with different configuration
     local_action: cloudtrail
-      state=enabled name=main s3_bucket_name=ourbucket2
-      s3_key_prefix='' region=us-east-1
+      state: enabled
+      name: main
+      s3_bucket_name: ourbucket2
+      s3_key_prefix: ''
+      region: us-east-1
 
   - name: remove cloudtrail
-    local_action: cloudtrail state=disabled name=main region=us-east-1
+    local_action: cloudtrail
+      state: disabled
+      name: main
+      region: us-east-1
 """
 
 HAS_BOTO = False

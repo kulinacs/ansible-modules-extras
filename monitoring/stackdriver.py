@@ -15,6 +15,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 
 module: stackdriver
@@ -84,9 +88,21 @@ options:
 '''
 
 EXAMPLES = '''
-- stackdriver: key=AAAAAA event=deploy deployed_to=production deployed_by=leeroyjenkins repository=MyWebApp revision_id=abcd123
+- stackdriver:
+    key: AAAAAA
+    event: deploy
+    deployed_to: production
+    deployed_by: leeroyjenkins
+    repository: MyWebApp
+    revision_id: abcd123
 
-- stackdriver: key=AAAAAA event=annotation msg="Greetings from Ansible" annotated_by=leeroyjenkins level=WARN instance_id=i-abcd1234
+- stackdriver:
+    key: AAAAAA
+    event: annotation
+    msg: Greetings from Ansible
+    annotated_by: leeroyjenkins
+    level: WARN
+    instance_id: i-abcd1234
 '''
 
 # ===========================================

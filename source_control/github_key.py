@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 module: github_key
 short_description: Manage GitHub access keys.
@@ -78,9 +82,9 @@ EXAMPLES = '''
 - name: Authorize key with GitHub
   local_action:
     module: github_key
-    name: 'Access Key for Some Machine'
-    token: '{{github_access_token}}'
-    pubkey: '{{ssh_pub_key.stdout}}'
+    name: Access Key for Some Machine
+    token: '{{ github_access_token }}'
+    pubkey: '{{ ssh_pub_key.stdout }}'
 '''
 
 

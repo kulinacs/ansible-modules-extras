@@ -21,6 +21,10 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: netscaler
@@ -87,13 +91,26 @@ author: "Nandor Sivok (@dominis)"
 
 EXAMPLES = '''
 # Disable the server
-ansible host -m netscaler -a "nsc_host=nsc.example.com user=apiuser password=apipass"
+- netscaler:
+    nsc_host: nsc.example.com
+    user: apiuser
+    password: apipass
 
 # Enable the server
-ansible host -m netscaler -a "nsc_host=nsc.example.com user=apiuser password=apipass action=enable"
+- netscaler:
+    nsc_host: nsc.example.com
+    user: apiuser
+    password: apipass
+    action: enable
 
 # Disable the service local:8080
-ansible host -m netscaler -a "nsc_host=nsc.example.com user=apiuser password=apipass name=local:8080 type=service action=disable"
+- netscaler:
+    nsc_host: nsc.example.com
+    user: apiuser
+    password: apipass
+    name: 'local:8080'
+    type: service
+    action: disable
 '''
 
 
@@ -188,4 +205,6 @@ def main():
 from ansible.module_utils.basic import *
 from ansible.module_utils.urls import *
 from ansible.module_utils.pycompat24 import get_exception
-main()
+
+if __name__ == '__main__':
+    main()

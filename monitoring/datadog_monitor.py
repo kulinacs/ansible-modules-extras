@@ -19,6 +19,10 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 # import module snippets
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: datadog_monitor
@@ -28,7 +32,6 @@ description:
 - "Options like described on http://docs.datadoghq.com/api/"
 version_added: "2.0"
 author: "Sebastian Kornehl (@skornehl)"
-notes: []
 requirements: [datadog]
 options:
     api_key:
@@ -45,7 +48,7 @@ options:
         description: ["A list of tags to associate with your monitor when creating or updating. This can help you categorize and filter monitors."]
         required: false
         default: None
-        version_added: 2.2
+        version_added: "2.2"
     type:
         description:
             - "The type of the monitor."
@@ -100,7 +103,17 @@ options:
         description: ["A boolean indicating whether changes to this monitor should be restricted to the creator or admins."]
         required: false
         default: False
-        version_added: 2.2
+        version_added: "2.2"
+    require_full_window:
+        description: ["A boolean indicating whether this monitor needs a full window of data before it's evaluated. We highly recommend you set this to False for sparse metrics, otherwise some evaluations will be skipped."]
+        required: false
+        default: null
+        version_added: "2.3"
+    id:
+        description: ["The id of the alert. If set, will be used instead of the name to locate the alert."]
+        required: false
+        default: null
+        version_added: "2.3"
 '''
 
 EXAMPLES = '''
@@ -167,7 +180,9 @@ def main():
             notify_audit=dict(required=False, default=False, type='bool'),
             thresholds=dict(required=False, type='dict', default=None),
             tags=dict(required=False, type='list', default=None),
-            locked=dict(required=False, default=False, type='bool')
+            locked=dict(required=False, default=False, type='bool'),
+            require_full_window=dict(required=False, default=None, type='bool'),
+            id=dict(required=False)
         )
     )
 
@@ -192,13 +207,22 @@ def main():
         unmute_monitor(module)
 
 def _fix_template_vars(message):
-    return message.replace('[[', '{{').replace(']]', '}}')
+    if message:
+        return message.replace('[[', '{{').replace(']]', '}}')
+    return message
 
 
 def _get_monitor(module):
-    for monitor in api.Monitor.get_all():
-        if monitor['name'] == module.params['name']:
-            return monitor
+    if module.params['id'] is not None:
+        monitor = api.Monitor.get(module.params['id'])
+        if 'errors' in monitor:
+            module.fail_json(msg="Failed to retrieve monitor with id %s, errors are %s" % (module.params['id'], str(monitor['errors'])))
+        return monitor
+    else:
+        monitors = api.Monitor.get_all()
+        for monitor in monitors:
+            if monitor['name'] == module.params['name']:
+                return monitor
     return {}
 
 
@@ -253,6 +277,7 @@ def install_monitor(module):
         "escalation_message": module.params['escalation_message'],
         "notify_audit": module.boolean(module.params['notify_audit']),
         "locked": module.boolean(module.params['locked']),
+        "require_full_window" : module.params['require_full_window']
     }
 
     if module.params['type'] == "service check":

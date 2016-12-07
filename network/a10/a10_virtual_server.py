@@ -3,7 +3,8 @@
 
 """
 Ansible module to manage A10 Networks slb virtual server objects
-(c) 2014, Mischa Peters <mpeters@a10networks.com>
+(c) 2014, Mischa Peters <mpeters@a10networks.com>,
+Eric Chou <ericc@a10networks.com>
 
 This file is part of Ansible
 
@@ -21,31 +22,43 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: a10_virtual_server
 version_added: 1.8
-short_description: Manage A10 Networks devices' virtual servers
+short_description: Manage A10 Networks AX/SoftAX/Thunder/vThunder devices' virtual servers.
 description:
-    - Manage slb virtual server objects on A10 Networks devices via aXAPI
-author: "Mischa Peters (@mischapeters)"
+    - Manage SLB (Server Load Balancing) virtual server objects on A10 Networks devices via aXAPIv2.
+author: "Eric Chou (@ericchou) 2016, Mischa Peters (@mischapeters) 2014"
+notes:
+    - Requires A10 Networks aXAPI 2.1.
 extends_documentation_fragment: a10
 options:
+  partition:
+    version_added: "2.3"
+    description:
+      - set active-partition
+    required: false
+    default: null
   virtual_server:
     description:
-      - SLB virtual server name.
+      - The SLB (Server Load Balancing) virtual server name.
     required: true
     default: null
     aliases: ['vip', 'virtual']
   virtual_server_ip:
     description:
-      - SLB virtual server IP address.
+      - The SLB virtual server IPv4 address.
     required: false
     default: null
     aliases: ['ip', 'address']
   virtual_server_status:
     description:
-      - SLB virtual server status.
+      - The SLB virtual server status, such as enabled or disabled.
     required: false
     default: enable
     aliases: ['status']
@@ -57,7 +70,18 @@ options:
         specify the C(service_group:) as well as the C(status:). See the examples
         below for details. This parameter is required when C(state) is C(present).
     required: false
+  validate_certs:
+    description:
+      - If C(no), SSL certificates will not be validated. This should only be used
+        on personally controlled devices using self-signed certificates.
+    required: false
+    default: 'yes'
+    choices: ['yes', 'no']
 
+'''
+
+RETURN = '''
+#
 '''
 
 EXAMPLES = '''
@@ -66,6 +90,7 @@ EXAMPLES = '''
     host: a10.mydomain.com
     username: myadmin
     password: mypassword
+    partition: mypartition
     virtual_server: vserver1
     virtual_server_ip: 1.1.1.1
     virtual_server_ports:
@@ -79,6 +104,14 @@ EXAMPLES = '''
         protocol: http
         status: disabled
 
+'''
+
+RETURN = '''
+content:
+  description: the full info regarding the slb_virtual
+  returned: success
+  type: string
+  sample: "mynewvirtualserver"
 '''
 
 VALID_PORT_FIELDS = ['port', 'protocol', 'service_group', 'status']
@@ -129,6 +162,7 @@ def main():
             virtual_server_ip=dict(type='str', aliases=['ip', 'address'], required=True),
             virtual_server_status=dict(type='str', default='enabled', aliases=['status'], choices=['enabled', 'disabled']),
             virtual_server_ports=dict(type='list', required=True),
+            partition=dict(type='str', default=[]),
         )
     )
 
@@ -140,6 +174,7 @@ def main():
     host = module.params['host']
     username = module.params['username']
     password = module.params['password']
+    partition = module.params['partition']
     state = module.params['state']
     write_config = module.params['write_config']
     slb_virtual = module.params['virtual_server']
@@ -155,6 +190,7 @@ def main():
     axapi_base_url = 'https://%s/services/rest/V2.1/?format=json' % host
     session_url = axapi_authenticate(module, axapi_base_url, username, password)
 
+    slb_server_partition = axapi_call(module, session_url + '&method=system.partition.active', json.dumps({'name': partition}))
     slb_virtual_data = axapi_call(module, session_url + '&method=slb.virtual_server.search', json.dumps({'name': slb_virtual}))
     slb_virtual_exists = not axapi_failure(slb_virtual_data)
 
@@ -248,9 +284,11 @@ def main():
     module.exit_json(changed=changed, content=result)
 
 # standard ansible module imports
-from ansible.module_utils.basic import *
-from ansible.module_utils.urls import *
-from ansible.module_utils.a10 import *
+import json
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.urls import url_argument_spec
+from ansible.module_utils.a10 import axapi_call, a10_argument_spec, axapi_authenticate, axapi_failure, axapi_enabled_disabled, axapi_get_vport_protocol
+
 
 if __name__ == '__main__':
     main()

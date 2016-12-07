@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['stableinterface'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 module: route53_zone
 short_description: add or delete Route53 zones
@@ -54,25 +58,34 @@ author: "Christopher Troup (@minichate)"
 
 EXAMPLES = '''
 # create a public zone
-- route53_zone: zone=example.com state=present comment="this is an example"
+- route53_zone:
+    zone: example.com
+    state: present
+    comment: this is an example
 
 # delete a public zone
-- route53_zone: zone=example.com state=absent
+- route53_zone:
+    zone: example.com
+    state: absent
 
 - name: private zone for devel
-  route53_zone: zone=devel.example.com state=present vpc_id={{myvpc_id}} comment='developer domain'
+  route53_zone:
+    zone: devel.example.com
+    state: present
+    vpc_id: '{{ myvpc_id }}'
+    comment: developer domain
 
 # more complex example
 - name: register output after creating zone in parameterized region
   route53_zone:
-    vpc_id: "{{ vpc.vpc_id }}"
-    vpc_region: "{{ ec2_region }}"
-    zone: "{{ vpc_dns_zone }}"
+    vpc_id: '{{ vpc.vpc_id }}'
+    vpc_region: '{{ ec2_region }}'
+    zone: '{{ vpc_dns_zone }}'
     state: present
-    register: zone_out
+  register: zone_out
 
-- debug: var=zone_out
-
+- debug:
+    var: zone_out
 '''
 
 RETURN='''

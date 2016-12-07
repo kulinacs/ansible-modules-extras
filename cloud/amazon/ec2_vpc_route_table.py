@@ -13,6 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['stableinterface'],
+                    'supported_by': 'committer',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: ec2_vpc_route_table
@@ -299,7 +303,7 @@ def route_spec_matches_route(route_spec, route):
             if all((not route.gateway_id, not route.instance_id, not route.interface_id, not route.vpc_peering_connection_id)):
                 return True
 
-    for k in key_attr_map.iterkeys():
+    for k in key_attr_map:
         if k in route_spec:
             if route_spec[k] != getattr(route, k):
                 return False

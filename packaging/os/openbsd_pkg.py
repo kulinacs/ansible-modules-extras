@@ -26,6 +26,10 @@ import sqlite3
 
 from distutils.version import StrictVersion
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: openbsd_pkg
@@ -68,28 +72,45 @@ options:
 
 EXAMPLES = '''
 # Make sure nmap is installed
-- openbsd_pkg: name=nmap state=present
+- openbsd_pkg:
+    name: nmap
+    state: present
 
 # Make sure nmap is the latest version
-- openbsd_pkg: name=nmap state=latest
+- openbsd_pkg:
+    name: nmap
+    state: latest
 
 # Make sure nmap is not installed
-- openbsd_pkg: name=nmap state=absent
+- openbsd_pkg:
+    name: nmap
+    state: absent
 
 # Make sure nmap is installed, build it from source if it is not
-- openbsd_pkg: name=nmap state=present build=yes
+- openbsd_pkg:
+    name: nmap
+    state: present
+    build: yes
 
 # Specify a pkg flavour with '--'
-- openbsd_pkg: name=vim--no_x11 state=present
+- openbsd_pkg:
+    name: vim--no_x11
+    state: present
 
 # Specify the default flavour to avoid ambiguity errors
-- openbsd_pkg: name=vim-- state=present
+- openbsd_pkg:
+    name: vim--
+    state: present
 
 # Specify a package branch (requires at least OpenBSD 6.0)
-- openbsd_pkg: name=python%3.5 state=present
+- openbsd_pkg:
+    name: python%3.5
+    state: present
 
 # Update all packages on the system
-- openbsd_pkg: name=* state=latest
+- openbsd_pkg:
+    name: *
+    state: latest
 '''
 
 # Function used for executing commands.
@@ -526,4 +547,6 @@ def main():
 
 # Import module snippets.
 from ansible.module_utils.basic import *
-main()
+
+if __name__ == '__main__':
+    main()

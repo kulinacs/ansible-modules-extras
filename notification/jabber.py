@@ -19,6 +19,10 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>
 
 
+ANSIBLE_METADATA = {'status': ['stableinterface'],
+                    'supported_by': 'committer',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 version_added: "1.2"
@@ -66,24 +70,27 @@ author: "Brian Coca (@bcoca)"
 
 EXAMPLES = '''
 # send a message to a user
-- jabber: user=mybot@example.net
-          password=secret
-          to=friend@example.net
-          msg="Ansible task finished"
+- jabber:
+    user: mybot@example.net
+    password: secret
+    to: friend@example.net
+    msg: Ansible task finished
 
 # send a message to a room
-- jabber: user=mybot@example.net
-          password=secret
-          to=mychaps@conference.example.net/ansiblebot
-          msg="Ansible task finished"
+- jabber:
+    user: mybot@example.net
+    password: secret
+    to: mychaps@conference.example.net/ansiblebot
+    msg: Ansible task finished
 
 # send a message, specifying the host and port
-- jabber user=mybot@example.net
-         host=talk.example.net
-         port=5223
-         password=secret
-         to=mychaps@example.net
-         msg="Ansible task finished"
+- jabber
+    user: mybot@example.net
+    host: talk.example.net
+    port: 5223
+    password: secret
+    to: mychaps@example.net
+    msg: Ansible task finished
 '''
 
 import os
@@ -164,4 +171,6 @@ def main():
 # import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.pycompat24 import get_exception
-main()
+
+if __name__ == '__main__':
+    main()

@@ -15,6 +15,10 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: lambda
@@ -119,8 +123,10 @@ tasks:
     - sg-123abcde
     - sg-edcba321
   with_items:
-    - { name: HelloWorld, zip_file: 'hello-code.zip' }
-    - { name: ByeBye, zip_file: 'bye-code.zip' }
+    - name: HelloWorld
+      zip_file: hello-code.zip
+    - name: ByeBye
+      zip_file: bye-code.zip
 
 # Basic Lambda function deletion
 tasks:

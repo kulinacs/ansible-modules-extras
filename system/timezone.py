@@ -24,6 +24,10 @@ from ansible.module_utils.basic import AnsibleModule, get_platform
 from ansible.module_utils.six import iteritems
 
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'committer',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: timezone
@@ -71,7 +75,8 @@ diff:
 
 EXAMPLES = '''
 - name: set timezone to Asia/Tokyo
-  timezone: name=Asia/Tokyo
+  timezone:
+    name: Asia/Tokyo
 '''
 
 
@@ -310,8 +315,8 @@ class NosystemdTimezone(Timezone):
             # Debian/Ubuntu
             self.update_timezone       = self.module.get_bin_path('dpkg-reconfigure', required=True)
             self.update_timezone      += ' --frontend noninteractive tzdata'
-            self.conf_files['name']    = '/etc/timezone',
-            self.conf_files['hwclock'] = '/etc/default/rcS',
+            self.conf_files['name']    = '/etc/timezone'
+            self.conf_files['hwclock'] = '/etc/default/rcS'
             self.regexps['name']       = re.compile(r'^([^\s]+)', re.MULTILINE)
             self.tzline_format         = '%s\n'
         else:

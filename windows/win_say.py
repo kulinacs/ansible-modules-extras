@@ -21,6 +21,10 @@
 # this is a windows documentation stub.  actual code lives in the .ps1
 # file of the same name
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: win_say
@@ -87,7 +91,7 @@ EXAMPLES = '''
   # text from file example
 - win_say:
     start_sound_path: 'C:\Windows\Media\Windows Balloon.wav'
-    msg_text: AppData\Local\Temp\morning_report.txt 
+    msg_file: AppData\Local\Temp\morning_report.txt
     end_sound_path: 'C:\Windows\Media\chimes.wav'
 '''
 RETURN = '''

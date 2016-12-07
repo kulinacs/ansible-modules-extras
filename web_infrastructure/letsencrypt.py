@@ -20,8 +20,13 @@
 
 import binascii
 import copy
+import locale
 import textwrap
 from datetime import datetime
+
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
 
 DOCUMENTATION = '''
 ---
@@ -122,8 +127,8 @@ EXAMPLES = '''
 # for example:
 #
 # - copy:
-#     dest: /var/www/html/{{ sample_com_http_challenge['challenge_data']['sample.com']['http-01']['resource'] }}
-#     content: "{{ sample_com_http_challenge['challenge_data']['sample.com']['http-01']['resource_value'] }}"
+#     dest: /var/www/html/{{ sample_com_challenge['challenge_data']['sample.com']['http-01']['resource'] }}
+#     content: "{{ sample_com_challenge['challenge_data']['sample.com']['http-01']['resource_value'] }}"
 #     when: sample_com_challenge|changed
 
 - letsencrypt:
@@ -769,6 +774,9 @@ def main():
         ),
         supports_check_mode = True,
     )
+ 
+    # AnsibleModule() changes the locale, so change it back to C because we rely on time.strptime() when parsing certificate dates.
+    locale.setlocale(locale.LC_ALL, "C")
 
     cert_days = get_cert_days(module,module.params['dest'])
     if cert_days < module.params['remaining_days']:

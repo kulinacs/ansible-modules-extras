@@ -3,7 +3,8 @@
 
 """
 Ansible module to manage A10 Networks slb service-group objects
-(c) 2014, Mischa Peters <mpeters@a10networks.com>
+(c) 2014, Mischa Peters <mpeters@a10networks.com>,
+Eric Chou <ericc@a10networks.com>
 
 This file is part of Ansible
 
@@ -21,34 +22,45 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: a10_service_group
 version_added: 1.8
-short_description: Manage A10 Networks devices' service groups
+short_description: Manage A10 Networks AX/SoftAX/Thunder/vThunder devices' service groups.
 description:
-    - Manage slb service-group objects on A10 Networks devices via aXAPI
-author: "Mischa Peters (@mischapeters)"
+    - Manage SLB (Server Load Balancing) service-group objects on A10 Networks devices via aXAPIv2.
+author: "Eric Chou (@ericchou) 2016, Mischa Peters (@mischapeters) 2014"
 notes:
-    - When a server doesn't exist and is added to the service-group the server will be created
+    - Requires A10 Networks aXAPI 2.1.
+    - When a server doesn't exist and is added to the service-group the server will be created.
 extends_documentation_fragment: a10
 options:
+  partition:
+    version_added: "2.3"
+    description:
+      - set active-partition
+    required: false
+    default: null
   service_group:
     description:
-      - SLB service-group name.
+      - The SLB (Server Load Balancing) service-group name
     required: true
     default: null
     aliases: ['service', 'pool', 'group']
   service_group_protocol:
     description:
-      - SLB service-group protocol.
+      - The SLB service-group protocol of TCP or UDP.
     required: false
     default: tcp
     aliases: ['proto', 'protocol']
     choices: ['tcp', 'udp']
   service_group_method:
     description:
-      - SLB service-group loadbalancing method.
+      - The SLB service-group load balancing method, such as round-robin or weighted-rr.
     required: false
     default: round-robin
     aliases: ['method']
@@ -60,7 +72,18 @@ options:
         specify the C(status:). See the examples below for details.
     required: false
     default: null
+  validate_certs:
+    description:
+      - If C(no), SSL certificates will not be validated. This should only be used
+        on personally controlled devices using self-signed certificates.
+    required: false
+    default: 'yes'
+    choices: ['yes', 'no']
 
+'''
+
+RETURN = '''
+#
 '''
 
 EXAMPLES = '''
@@ -69,6 +92,7 @@ EXAMPLES = '''
     host: a10.mydomain.com
     username: myadmin
     password: mypassword
+    partition: mypartition
     service_group: sg-80-tcp
     servers:
       - server: foo1.mydomain.com
@@ -81,6 +105,14 @@ EXAMPLES = '''
         port: 8080
         status: disabled
 
+'''
+
+RETURN = '''
+content:
+  description: the full info regarding the slb_service_group
+  returned: success
+  type: string
+  sample: "mynewservicegroup"
 '''
 
 VALID_SERVICE_GROUP_FIELDS = ['name', 'protocol', 'lb_method']
@@ -134,6 +166,7 @@ def main():
                                                'src-ip-only-hash',
                                                'src-ip-hash']),
             servers=dict(type='list', aliases=['server', 'member'], default=[]),
+            partition=dict(type='str', default=[]),
         )
     )
 
@@ -145,6 +178,7 @@ def main():
     host = module.params['host']
     username = module.params['username']
     password = module.params['password']
+    partition = module.params['partition']
     state = module.params['state']
     write_config = module.params['write_config']
     slb_service_group = module.params['service_group']
@@ -186,7 +220,8 @@ def main():
 
     # first we authenticate to get a session id
     session_url = axapi_authenticate(module, axapi_base_url, username, password)
-
+    # then we select the active-partition
+    slb_server_partition = axapi_call(module, session_url + '&method=system.partition.active', json.dumps({'name': partition}))
     # then we check to see if the specified group exists
     slb_result = axapi_call(module, session_url + '&method=slb.service_group.search', json.dumps({'name': slb_service_group}))
     slb_service_group_exist = not axapi_failure(slb_result)
@@ -294,9 +329,11 @@ def main():
     module.exit_json(changed=changed, content=result)
 
 # standard ansible module imports
-from ansible.module_utils.basic import *
-from ansible.module_utils.urls import *
-from ansible.module_utils.a10 import *
+import json
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.urls import url_argument_spec
+from ansible.module_utils.a10 import axapi_call, a10_argument_spec, axapi_authenticate, axapi_failure, axapi_enabled_disabled
+
 
 if __name__ == '__main__':
     main()

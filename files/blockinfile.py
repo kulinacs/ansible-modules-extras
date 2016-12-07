@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'core',
+                    'version': '1.0'}
+
 DOCUMENTATION = """
 ---
 module: blockinfile
@@ -141,9 +145,9 @@ EXAMPLES = r"""
       {{item.ip}} {{item.name}}
     marker: "# {mark} ANSIBLE MANAGED BLOCK {{item.name}}"
   with_items:
-      - { name: host1, ip: 10.10.1.10 }
-      - { name: host2, ip: 10.10.1.11 }
-      - { name: host3, ip: 10.10.1.12 }
+    - { name: host1, ip: 10.10.1.10 }
+    - { name: host2, ip: 10.10.1.11 }
+    - { name: host3, ip: 10.10.1.12 }
 """
 
 import re
@@ -258,9 +262,9 @@ def main():
 
     n0 = n1 = None
     for i, line in enumerate(lines):
-        if line.startswith(marker0):
+        if line == marker0:
             n0 = i
-        if line.startswith(marker1):
+        if line == marker1:
             n1 = i
 
     if None in (n0, n1):

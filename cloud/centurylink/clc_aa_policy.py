@@ -19,6 +19,10 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>
 #
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 module: clc_aa_policy
 short_description: Create or Delete Anti Affinity Policies at CenturyLink Cloud.
@@ -74,13 +78,14 @@ EXAMPLES = '''
   tasks:
     - name: Create an Anti Affinity Policy
       clc_aa_policy:
-        name: 'Hammer Time'
-        location: 'UK3'
+        name: Hammer Time
+        location: UK3
         state: present
       register: policy
 
     - name: debug
-      debug: var=policy
+      debug:
+        var: policy
 
 ---
 - name: Delete AA Policy
@@ -90,13 +95,14 @@ EXAMPLES = '''
   tasks:
     - name: Delete an Anti Affinity Policy
       clc_aa_policy:
-        name: 'Hammer Time'
-        location: 'UK3'
+        name: Hammer Time
+        location: UK3
         state: absent
       register: policy
 
     - name: debug
-      debug: var=policy
+      debug:
+        var: policy
 '''
 
 RETURN = '''

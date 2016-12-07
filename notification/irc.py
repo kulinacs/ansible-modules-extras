@@ -19,6 +19,10 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+ANSIBLE_METADATA = {'status': ['stableinterface'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: irc
@@ -306,4 +310,6 @@ def main():
 # import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.pycompat24 import get_exception
-main()
+
+if __name__ == '__main__':
+    main()

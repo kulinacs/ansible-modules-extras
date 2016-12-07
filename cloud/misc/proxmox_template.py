@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: proxmox_template
@@ -98,16 +102,39 @@ author: "Sergei Antipov @UnderGreen"
 
 EXAMPLES = '''
 # Upload new openvz template with minimal options
-- proxmox_template: node='uk-mc02' api_user='root@pam' api_password='1q2w3e' api_host='node1' src='~/ubuntu-14.04-x86_64.tar.gz'
+- proxmox_template:
+    node: uk-mc02
+    api_user: root@pam
+    api_password: 1q2w3e
+    api_host: node1
+    src: ~/ubuntu-14.04-x86_64.tar.gz
 
 # Upload new openvz template with minimal options use environment PROXMOX_PASSWORD variable(you should export it before)
-- proxmox_template: node='uk-mc02' api_user='root@pam' api_host='node1' src='~/ubuntu-14.04-x86_64.tar.gz'
+- proxmox_template:
+    node: uk-mc02
+    api_user: root@pam
+    api_host: node1
+    src: ~/ubuntu-14.04-x86_64.tar.gz
 
 # Upload new openvz template with all options and force overwrite
-- proxmox_template: node='uk-mc02' api_user='root@pam' api_password='1q2w3e' api_host='node1' storage='local' content_type='vztmpl' src='~/ubuntu-14.04-x86_64.tar.gz' force=yes
+- proxmox_template:
+    node: uk-mc02
+    api_user: root@pam
+    api_password: 1q2w3e
+    api_host: node1
+    storage: local
+    content_type: vztmpl
+    src: ~/ubuntu-14.04-x86_64.tar.gz
+    force: yes
 
 # Delete template with minimal options
-- proxmox_template: node='uk-mc02' api_user='root@pam' api_password='1q2w3e' api_host='node1' template='ubuntu-14.04-x86_64.tar.gz' state=absent
+- proxmox_template:
+    node: uk-mc02
+    api_user: root@pam
+    api_password: 1q2w3e
+    api_host: node1
+    template: ubuntu-14.04-x86_64.tar.gz
+    state: absent
 '''
 
 import os
@@ -229,4 +256,6 @@ def main():
 
 # import module snippets
 from ansible.module_utils.basic import *
-main()
+
+if __name__ == '__main__':
+    main()

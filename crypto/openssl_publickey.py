@@ -28,6 +28,10 @@ else:
 
 import os
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: openssl_publickey
@@ -65,18 +69,21 @@ options:
 
 EXAMPLES = '''
 # Generate an OpenSSL public key.
-- openssl_publickey: path=/etc/ssl/public/ansible.com.pem
-                     privatekey_path=/etc/ssl/private/ansible.com.pem
+- openssl_publickey:
+    path: /etc/ssl/public/ansible.com.pem
+    privatekey_path: /etc/ssl/private/ansible.com.pem
 
 # Force regenerate an OpenSSL public key if it already exists
-- openssl_publickey: path=/etc/ssl/public/ansible.com.pem
-                     privatekey_path=/etc/ssl/private/ansible.com.pem
-                     force=True
+- openssl_publickey:
+    path: /etc/ssl/public/ansible.com.pem
+    privatekey_path: /etc/ssl/private/ansible.com.pem
+    force: True
 
 # Remove an OpenSSL public key
-- openssl_publickey: path=/etc/ssl/public/ansible.com.pem
-                     privatekey_path=/etc/ssl/private/ansible.com.pem
-                     state=absent
+- openssl_publickey:
+    path: /etc/ssl/public/ansible.com.pem
+    privatekey_path: /etc/ssl/private/ansible.com.pem
+    state: absent
 '''
 
 RETURN = '''

@@ -22,6 +22,10 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: mongodb_parameter
@@ -92,7 +96,10 @@ author: "Loic Blot (@nerzhul)"
 
 EXAMPLES = '''
 # Set MongoDB syncdelay to 60 (this is an int)
-- mongodb_parameter: param="syncdelay" value=60 param_type="int"
+- mongodb_parameter:
+    param: syncdelay
+    value: 60
+    param_type: int
 '''
 
 RETURN = '''

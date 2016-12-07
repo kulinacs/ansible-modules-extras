@@ -19,6 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: mongodb_user
@@ -118,21 +122,54 @@ author: "Elliott Foster (@elliotttf)"
 
 EXAMPLES = '''
 # Create 'burgers' database user with name 'bob' and password '12345'.
-- mongodb_user: database=burgers name=bob password=12345 state=present
+- mongodb_user:
+    database: burgers
+    name: bob
+    password: 12345
+    state: present
 
 # Create a database user via SSL (MongoDB must be compiled with the SSL option and configured properly)
-- mongodb_user: database=burgers name=bob password=12345 state=present ssl=True
+- mongodb_user:
+    database: burgers
+    name: bob
+    password: 12345
+    state: present
+    ssl: True
 
 # Delete 'burgers' database user with name 'bob'.
-- mongodb_user: database=burgers name=bob state=absent
+- mongodb_user:
+    database: burgers
+    name: bob
+    state: absent
 
 # Define more users with various specific roles (if not defined, no roles is assigned, and the user will be added via pre mongo 2.2 style)
-- mongodb_user: database=burgers name=ben password=12345 roles='read' state=present
-- mongodb_user: database=burgers name=jim password=12345 roles='readWrite,dbAdmin,userAdmin' state=present
-- mongodb_user: database=burgers name=joe password=12345 roles='readWriteAnyDatabase' state=present
+- mongodb_user:
+    database: burgers
+    name: ben
+    password: 12345
+    roles: read
+    state: present
+- mongodb_user:
+    database: burgers
+    name: jim
+    password: 12345
+    roles: readWrite,dbAdmin,userAdmin
+    state: present
+- mongodb_user:
+    database: burgers
+    name: joe
+    password: 12345
+    roles: readWriteAnyDatabase
+    state: present
 
 # add a user to database in a replica set, the primary server is automatically discovered and written to
-- mongodb_user: database=burgers name=bob replica_set=belcher password=12345 roles='readWriteAnyDatabase' state=present
+- mongodb_user:
+    database: burgers
+    name: bob
+    replica_set: belcher
+    password: 12345
+    roles: readWriteAnyDatabase
+    state: present
 
 # add a user 'oplog_reader' with read only access to the 'local' database on the replica_set 'belcher'. This is usefull for oplog access (MONGO_OPLOG_URL).
 # please notice the credentials must be added to the 'admin' database because the 'local' database is not syncronized and can't receive user credentials
@@ -147,7 +184,8 @@ EXAMPLES = '''
     state: present
     replica_set: belcher
     roles:
-     - { db: "local"  , role: "read" }
+      - db: local
+        role: read
 
 '''
 
@@ -185,7 +223,7 @@ def check_compatibility(module, client):
     loose_srv_version = LooseVersion(client.server_info()['version'])
     loose_driver_version = LooseVersion(PyMongoVersion)
 
-    if loose_srv_version >= LooseVersion('3.2') and loose_driver_version <= LooseVersion('3.2'):
+    if loose_srv_version >= LooseVersion('3.2') and loose_driver_version < LooseVersion('3.2'):
         module.fail_json(msg=' (Note: you must use pymongo 3.2+ with MongoDB >= 3.2)')
 
     elif loose_srv_version >= LooseVersion('3.0') and loose_driver_version <= LooseVersion('2.8'):
@@ -411,4 +449,6 @@ def main():
 # import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.pycompat24 import get_exception
-main()
+
+if __name__ == '__main__':
+    main()

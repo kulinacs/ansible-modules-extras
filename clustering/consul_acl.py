@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = """
 module: consul_acl
 short_description: "manipulate consul acl keys and rules"
@@ -336,7 +340,7 @@ def main():
         mgmt_token=dict(required=True, no_log=True),
         host=dict(default='localhost'),
         scheme=dict(required=False, default='http'),
-        validate_certs=dict(required=False, default=True),
+        validate_certs=dict(required=False, type='bool', default=True),
         name=dict(required=False),
         port=dict(default=8500, type='int'),
         rules=dict(default=None, required=False, type='list'),

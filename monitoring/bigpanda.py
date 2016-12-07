@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigpanda
@@ -79,15 +83,34 @@ requirements: [ ]
 '''
 
 EXAMPLES = '''
-- bigpanda: component=myapp version=1.3 token={{ bigpanda_token }} state=started
+- bigpanda:
+    component: myapp
+    version: '1.3'
+    token: '{{ bigpanda_token }}'
+    state: started
 ...
-- bigpanda: component=myapp version=1.3 token={{ bigpanda_token }} state=finished
+- bigpanda:
+    component: myapp
+    version: '1.3'
+    token: '{{ bigpanda_token }}'
+    state: finished
 
-If outside servers aren't reachable from your machine, use local_action and override hosts:
-- local_action: bigpanda component=myapp version=1.3 token={{ bigpanda_token }} hosts={{ansible_hostname}} state=started
+# If outside servers aren't reachable from your machine, use delegate_to and override hosts:
+- bigpanda:
+    component: myapp
+    version: '1.3'
+    token: '{{ bigpanda_token }}'
+    hosts: '{{ ansible_hostname }}'
+    state: started
+  delegate_to: localhost
   register: deployment
 ...
-- local_action: bigpanda component=deployment.component version=deployment.version token=deployment.token state=finished
+- bigpanda:
+    component: '{{ deployment.component }}'
+    version: '{{ deployment.version }}'
+    token: '{{ deployment.token }}'
+    state: finished
+  delegate_to: localhost
 '''
 
 # ===========================================

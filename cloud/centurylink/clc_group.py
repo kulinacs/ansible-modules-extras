@@ -19,6 +19,10 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>
 #
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 module: clc_group
 short_description: Create/delete Server Groups at Centurylink Cloud
@@ -83,13 +87,14 @@ EXAMPLES = '''
   tasks:
     - name: Create / Verify a Server Group at CenturyLink Cloud
       clc_group:
-        name: 'My Cool Server Group'
-        parent: 'Default Group'
+        name: My Cool Server Group
+        parent: Default Group
         state: present
       register: clc
 
     - name: debug
-      debug: var=clc
+      debug:
+        var: clc
 
 # Delete a Server Group
 
@@ -101,14 +106,14 @@ EXAMPLES = '''
   tasks:
     - name: Delete / Verify Absent a Server Group at CenturyLink Cloud
       clc_group:
-        name: 'My Cool Server Group'
-        parent: 'Default Group'
+        name: My Cool Server Group
+        parent: Default Group
         state: absent
       register: clc
 
     - name: debug
-      debug: var=clc
-
+      debug:
+        var: clc
 '''
 
 RETURN = '''
